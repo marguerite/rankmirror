@@ -1,0 +1,162 @@
+#!/usr/bin/env ruby
+
+$:.push(File.expand_path(File.dirname(__FILE__) + "/../lib"))
+
+require 'rankmirror'
+require 'optparse'
+require 'colorize'
+
+options = RankMirror::Options.new
+
+parser = OptionParser.new do |opts|
+	opts.banner = "Usage: rankmirror [options]"
+	opts.separator ""
+	opts.separator "Specific options:"
+
+	opts.on("-l", "--localonly",
+		"Check mirrors in your local mirrorlist file ONLY.") do |local|
+		options.local = true	
+	end
+
+	opts.on("-o", "--os [Distribution]", 
+		"Check mirrors for this distro. Now supported openSUSE, Packman.") do |os|
+		case os
+		when "openSUSE","opensuse"
+			options.os = "opensuse"
+			options.path = "tumbleweed/repo/oss/suse/repodata/"
+		when "Packman","packman"
+			options.os = "packman"
+			options.path = "openSUSE_Tumbleweed/Essentials/repodata/"
+		else
+			raise RankMirror::DistributionNotImplemented
+		end
+
+		if options.os.nil?
+			raise RankMirror::MandatoryOptionNotSpecified
+		end
+	end
+
+	opts.on("--continent [Continent]", "Check mirrors on this continent. openSUSE ONLY.
+		Available Continents: Africa, Asia, Europe, North America,
+		South America, Oceania.") do |cont|
+		unless options.os != "opensuse"
+			case cont
+			when "Africa","africa"
+				options.continent = "africa"
+			when "Asia","asia","china","japan"
+				options.continent = "asia"
+			when "Europe","europe","euro"
+				options.continent = "euro"
+			when "North America","north america","na"
+				options.continent = "na"
+			when "South America","south america","sa"
+				options.continent = "sa"
+			when "Oceania","oceania","ocean"
+				options.continent = "ocean"
+			else
+				options.continent = "world"
+			end
+		else
+			raise RankMirror::SuboptionNotSupported
+		end
+	end
+
+	opts.on("--flavor [Flavor]","Check mirrors for this flavor.
+		Now supported: Leap-42.2, Leap-42.1, Tumbleweed") do |flavor|
+		case options.os
+		when "opensuse","packman"
+			case flavor
+			when "Leap-42.2","leap-42.2","leap-4220","4220"
+				options.flavor = "leap4220"
+			when "Leap-42.1","leap-42.1","leap-4210","4210"
+				options.flavor = "leap4210"
+			when "Tumbleweed","tumbleweed","tw"
+				options.flavor = "tumbleweed"
+			else
+				raise RankMirror::FlavorNotImplemented
+			end
+		else
+			raise RankMirror::DistributionNotImplemented
+		end
+	end
+
+	opts.on("-q", "--quick [1/0]", "Check mirrors quickly/slowly.
+		The quick check will download a tiny file from the mirror, thus
+		response quickly but the result will be less accurate. Default: 1") do |quick|
+		unless quick.to_i > 0
+			options.quick = false
+			case options.os
+			when "opensuse"
+				options.file = "appdata.xml.gz"
+			when "packman"
+				options.file = "primary.xml.gz"
+			else
+				raise RankMirror::DistributionNotImplemented
+			end
+		end
+	end
+
+	opts.on("-s","--save","Save the result in your .rankmirror directory") do |save|
+		options.save = true
+	end
+
+	opts.separator ""
+	opts.separator "Common Options:"
+
+	opts.on_tail("-h", "--help", "Show this message") do
+		puts opts
+		exit
+	end
+
+	opts.on_tail("--version","Show version") do
+		puts RankMirror::VERSION
+		exit
+	end
+
+end
+
+parser.parse!(ARGV)
+
+mirrors = Array.new
+config = RankMirror::Config.new(options)
+
+case options.os
+when "opensuse"
+	local = RankMirror::LocalOSS.new(config.path,options).sort
+	mirrors = unless options.local
+			remote = RankMirror::RemoteOSS.new(options).sort(options)
+			RankMirror::MirrorLists.new.join([remote,local])
+		  else
+			local
+		  end
+when "packman"
+	local = RankMirror::LocalPackman.new(config.path).sort(options)
+	mirrors = unless options.local
+			remote = RankMirror::RemotePackman.new.sort
+			RankMirror::MirrorLists.new.join([remote,local])
+		  else
+			local
+		  end
+else
+	raise RankMirror::DistributionNotImplemented
+end
+
+sorted = RankMirror::Mirrors.sort_by_speed(mirrors,options).select {|k,v| v > 0}
+
+if options.save
+	config.save(sorted.keys)
+end
+
+i = 1
+
+sorted.each do |k,v|
+	speed = v.round(2)
+	if i < 4
+		puts "#{i}\t#{k}\t#{speed}\sKiB/s".green
+	elsif i > 3 && i < 6
+		puts "#{i}\t#{k}\t#{speed}\sKiB/s".yellow
+	else
+		puts "#{i}\t#{k}\t#{speed}\sKiB/s".red
+	end
+	i += 1
+end
