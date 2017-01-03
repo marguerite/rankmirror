@@ -8,14 +8,10 @@ module RankMirror
 		end
 
 		def sort
-			sorted = @mirrorlist.each.map do |m|
-				if @options.os == "packman"
-					if @options.continent == m.continent && m[@options.flavor] == "true"
-						m.http
-					end	
-				end
-			end
-			return sorted.compact
+			sorted = @mirrorlist.map!{|m|
+					m.http if @options.continent == m.continent && m[@options.flavor] == "true"
+				}
+			return sorted
 		end
 	end
 end

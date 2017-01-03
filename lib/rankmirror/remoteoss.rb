@@ -104,7 +104,7 @@ module RankMirror
         	end
 
 		def sort(options)
-			sorted = @mirrors.each.map{|mirror| mirror.http if mirror[options.flavor]}.compact
+			sorted = @mirrors.map!{|mirror| mirror.http if mirror[options.flavor]}.compact!
 		end
 
     end

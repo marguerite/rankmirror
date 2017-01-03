@@ -2,31 +2,14 @@ module RankMirror
 	class Mirrors
 
 		def initialize(mirrors)
-			@mirrors = mirrors
-		end
-
-		def validate
-			mirrors = Array.new
-			@mirrors.each do |mirror|
-				if RankMirror::Reachable.reachable?(mirror)
-					mirrors << mirror
-				end
-			end
-			return mirrors
-		end
-
-		def self.validate(mirrors)
-			m = RankMirror::Mirrors.new(mirrors)
-			return m.validate
+			@mirrors = mirrors.map!{|mirror| mirror if RankMirror::Reachable.reachable?(mirror)}.compact!
 		end
 
 		def sort_by_speed(options)
 			speed_matrix,sorted = Hash.new,Hash.new
-			validated = RankMirror::Mirrors.validate(@mirrors)
-
-			size = validated.length
+			size = @mirrors.length
 			jobs = Queue.new
-			validated.each {|i| jobs.push i}
+			@mirrors.each {|i| jobs.push i}
 
 			workers = size.times.map do
 				Thread.new do 

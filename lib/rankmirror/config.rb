@@ -59,8 +59,7 @@ module RankMirror
 
 		def parse(config)
 			f = open(config)
-			mirrors = f.each_line.map do |l|
-				unless l.start_with?("#")
+			mirrors = f.readlines.select!{|l| l unless l.start_with?("#")}.map! {|l|
 					elements = l.strip.split("\t")
 					mirror = OpenStruct.new
 					mirror.name = elements[0]
@@ -72,10 +71,9 @@ module RankMirror
 					mirror.leap4210 = elements[6]
 					mirror.leap4230 = elements[7]
 					mirror
-				end
-			end
+				}
 			f.close
-			return mirrors.compact
+			return mirrors
 		end
 
 		def write(mirrors_array,file)
@@ -91,7 +89,7 @@ module RankMirror
         
 		def save(array)
 			FileUtils.mkdir_p @localpath unless File.directory?(@localpath)
-			mirrors_array = array.each.map do |uri|
+			mirrors_array = array.map! do |uri|
 				status = RankMirror::Status.new(uri)
 				mirror = status.get(@options)
 				mirror.name = URI.parse(uri).host if mirror.name.nil?

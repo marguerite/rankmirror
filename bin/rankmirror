@@ -7,7 +7,7 @@ require 'optparse'
 require 'colorize'
 require 'stackprof'
 
-StackProf.run(mode: :cpu, out: '/tmp/stackprof-cpu-rankmirror1.dump', raw: true) do
+#StackProf.run(mode: :cpu, out: '/tmp/stackprof-cpu-rankmirror1.dump', raw: true) do
 
 options = RankMirror::Options.new
 
@@ -164,4 +164,4 @@ sorted.each do |k,v|
 	i += 1
 end
 
-end
+#end
