@@ -5,7 +5,7 @@ module RankMirror
 		end
 
 		def join(mirrorlists)
-			mirrorlists.each {|mirrorlist| @mirrorlist += mirrorlist }
+			mirrorlists.each {|mirrorlist| @mirrorlist.concat(mirrorlist) }
 			return @mirrorlist.uniq
 		end
 

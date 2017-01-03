@@ -9,8 +9,8 @@ module RankMirror
 			pm.xpath('//td[@class="mirrortable mirror"]').each do |td|
 				unless td.at_xpath("a").nil? # ignore rsync mirror
 					v = td.at_xpath("a/@href").value
-					v += "/" unless /^.*\/$/.match(v)
-					v += "suse/"
+					v << "/" unless /^.*\/$/.match(v)
+					v << "suse/"
 					@pm_world << v unless v.index("ftp://")
 				end
 			end

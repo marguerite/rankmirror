@@ -4,3 +4,4 @@ source 'https://rubygems.org'
 gemspec
 nokogiri
 colorize
+curb

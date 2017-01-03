@@ -1,11 +1,19 @@
-require 'net/http'
-require 'uri'
-require 'timeout'
+require 'curb'
 
 module RankMirror
 	class Reachable
 		def initialize(uri)
-			@uri = URI.parse uri
+			@uri = uri
+			@ping = -> (x) {
+				r = Curl::Easy.new(x)
+				r.timeout_ms = 1000
+				r.perform
+				if r.response_code == 404
+					false
+				else
+					true
+				end
+				}
 		end
 
 		def self.reachable?(uri)
@@ -15,18 +23,10 @@ module RankMirror
 
 		def reachable?
 			begin 
-				Timeout::timeout(5) do
-					r = Net::HTTP.get_response(@uri)
-					if r.code == "404"
-						return false
-					else
-						return true
-					end
-				end
+				@ping.call(@uri)
 			rescue
 				return false
 			end
 		end
 	end
-end
-
+end         

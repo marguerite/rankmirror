@@ -32,7 +32,7 @@ module RankMirror
 				Thread.new do 
 					begin
 						while x = jobs.pop(true)
-							x += "/" unless x.index(/\/$/)
+							x << "/" unless x.index(/\/$/)
 							uri = x + options.path + options.file
 							speed = RankMirror::Speed.get(uri)
 							speed_matrix[x] = speed
