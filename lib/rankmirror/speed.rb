@@ -13,7 +13,7 @@ module RankMirror
 		end
 
 		def get
-			if RankMirror::Reachable.reachable?(@uri)
+			if RankMirror::Reachable.new(@uri).reachable?
 				@download_speed.call(@uri)
 			else
 				puts "#{/\/.*\//.match(@uri)[0].split("/")[2]} has bad repodata, is volatile or too slow, ignored.".red
@@ -25,11 +25,6 @@ module RankMirror
 				  return 0
 			end
 
-		end
-
-		def self.get(uri)
-			r = RankMirror::Speed.new(uri)
-			return r.get
 		end
 	end
 end

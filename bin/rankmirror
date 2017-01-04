@@ -7,7 +7,9 @@ require 'optparse'
 require 'colorize'
 require 'stackprof'
 
-#StackProf.run(mode: :cpu, out: '/tmp/stackprof-cpu-rankmirror1.dump', raw: true) do
+StackProf.run(mode: :cpu, out: '/tmp/stackprof-cpu-rankmirror.dump', raw: true) do
+
+st = Time.now
 
 options = RankMirror::Options.new
 
@@ -128,7 +130,7 @@ when "opensuse"
 	local = RankMirror::LocalOSS.new(config.path,options).sort
 	mirrors = unless options.local
 			remote = RankMirror::RemoteOSS.new(options).sort(options)
-			RankMirror::MirrorLists.new.join([remote,local])
+			remote.concat(local)
 		  else
 			local
 		  end
@@ -136,7 +138,7 @@ when "packman"
 	local = RankMirror::LocalPackman.new(config.path,options).sort
 	mirrors = unless options.local
 			remote = RankMirror::RemotePackman.new.sort
-			RankMirror::MirrorLists.new.join([remote,local])
+			remote.concat(local)
 		  else
 			local
 		  end
@@ -144,7 +146,7 @@ else
 	raise RankMirror::DistributionNotImplemented
 end
 
-sorted = RankMirror::Mirrors.sort_by_speed(mirrors,options).select {|k,v| v > 0}
+sorted = RankMirror::Mirrors.new(mirrors).sort_by_speed(options).select {|k,v| v > 0}
 
 if options.save
 	config.save(sorted.keys)
@@ -164,4 +166,7 @@ sorted.each do |k,v|
 	i += 1
 end
 
-#end
+et = Time.now
+p et - st
+
+end

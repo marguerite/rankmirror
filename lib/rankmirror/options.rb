@@ -38,7 +38,7 @@ module RankMirror
 		end
 
 		def local
-			@options.local
+			@local ||= @options.local
 		end
 
 		def os=(v)
@@ -46,7 +46,7 @@ module RankMirror
 		end
 
 		def os
-			@options.os
+			@os ||= @options.os
 		end
 
 		def continent=(v)
@@ -54,7 +54,7 @@ module RankMirror
 		end
 
 		def continent
-			@options.continent
+			@continent ||= @options.continent
 		end
 
 		def flavor=(v)
@@ -62,7 +62,7 @@ module RankMirror
 		end
 
 		def flavor
-			@options.flavor
+			@flavor ||= @options.flavor
 		end
 
 		def quick=(v)
@@ -70,7 +70,7 @@ module RankMirror
 		end
 
 		def quick
-			@options.quick
+			@quick ||= @options.quick
 		end
 
 		def path=(v)
@@ -78,7 +78,7 @@ module RankMirror
 		end
 
 		def path
-			@options.path
+			@path ||= @options.path
 		end
 
 		def file=(v)
@@ -86,7 +86,7 @@ module RankMirror
 		end
 
 		def file
-			@options.file
+			@file ||= @options.file
 		end
 
 		def save=(v)
@@ -94,7 +94,7 @@ module RankMirror
 		end
 
 		def save
-			@options.save
+			@save ||= @options.save
 		end
 	end
 end

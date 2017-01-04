@@ -16,11 +16,6 @@ module RankMirror
 				}
 		end
 
-		def self.reachable?(uri)
-			r = RankMirror::Reachable.new(uri)
-			return r.reachable?
-		end
-
 		def reachable?
 			begin 
 				@ping.call(@uri)

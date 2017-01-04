@@ -8,7 +8,6 @@ require 'rankmirror/remoteoss'
 require 'rankmirror/localoss'
 require 'rankmirror/remotepackman'
 require 'rankmirror/localpackman'
-require 'rankmirror/mirrorlists'
 require 'rankmirror/status'
 require 'rankmirror/config'
 

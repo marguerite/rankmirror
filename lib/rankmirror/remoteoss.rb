@@ -7,7 +7,8 @@ module RankMirror
         
 		def initialize(options)
 			oss = Nokogiri::HTML(open("http://mirrors.opensuse.org"))
-			@mirrors, continent = Array.new, String.new
+			@mirrors = Array.new
+			continent = String.new
 
 			oss.xpath("//table/tbody/tr").each do |tr|
                     		# <tr>

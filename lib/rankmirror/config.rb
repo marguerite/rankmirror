@@ -40,7 +40,8 @@ module RankMirror
 		end
 
 		def merge(systemconfig,localconfig)
-			system_mirrors,local_mirrors = parse(systemconfig), parse(localconfig)
+			system_mirrors = parse(systemconfig)
+			local_mirrors = parse(localconfig)
 			system_mirrors.each do |system_mirror|
 				http_match = false
 				local_mirrors.each do |local_mirror|
@@ -59,7 +60,8 @@ module RankMirror
 
 		def parse(config)
 			f = open(config)
-			mirrors = f.readlines.select!{|l| l unless l.start_with?("#")}.map! {|l|
+			mirrors = f.readlines.map!{|l|
+				unless l.start_with?("#")
 					elements = l.strip.split("\t")
 					mirror = OpenStruct.new
 					mirror.name = elements[0]
@@ -71,7 +73,8 @@ module RankMirror
 					mirror.leap4210 = elements[6]
 					mirror.leap4230 = elements[7]
 					mirror
-				}
+				end
+				}.compact!
 			f.close
 			return mirrors
 		end
@@ -80,7 +83,8 @@ module RankMirror
 			f = open(file,'w')
 			f.write "#sitename\tcontinent\tcountry\thttp\ttumbleweed\tleap4220\tleap4210\tleap4230\n"
 			mirrors_array.each do |mirror_struct|
-				str,m = String.new, mirror_struct
+				str = String.new
+				m = mirror_struct
 				str = m.name + "\t" + m.continent + "\t" + m.country + "\t" + m.http + "\t" + m.tumbleweed.to_s + "\t" + m.leap4220.to_s + "\t" + m.leap4210.to_s + "\t" + m.leap4230.to_s + "\n"
 				f.write str
 			end
