@@ -5,11 +5,6 @@ $:.push(File.expand_path(File.dirname(__FILE__) + "/../lib"))
 require 'rankmirror'
 require 'optparse'
 require 'colorize'
-require 'stackprof'
-
-StackProf.run(mode: :cpu, out: '/tmp/stackprof-cpu-rankmirror.dump', raw: true) do
-
-st = Time.now
 
 options = RankMirror::Options.new
 
@@ -129,7 +124,7 @@ case options.os
 when "opensuse"
 	local = RankMirror::LocalOSS.new(config.path,options).sort
 	mirrors = unless options.local
-			remote = RankMirror::RemoteOSS.new(options).sort(options)
+			remote = RankMirror::RemoteOSS.new(options).fetch
 			remote.concat(local)
 		  else
 			local
@@ -164,9 +159,4 @@ sorted.each do |k,v|
 		puts "#{i}\t#{k}\t#{speed}\sKiB/s".red
 	end
 	i += 1
-end
-
-et = Time.now
-p et - st
-
 end
