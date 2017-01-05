@@ -4,7 +4,7 @@ module RankMirror
 	class Cache
 		def initialize(uri)
 			@uri = uri
-			@host = @uri.sub(/^http(s):\/\//,"").gsub("/","_")
+			@host = @uri.gsub(/^http(s):\/\//,"").gsub("/","_")
 			@filename = File.join("/tmp",@host)
 		end
 

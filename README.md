@@ -1,39 +1,21 @@
 # Rankmirror
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/rankmirror`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+RankMirror is a ruby implementation of `rankmirrors` in ArchLinux but for all modern Linux distributions.
 
 ## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'rankmirror'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
 
     $ gem install rankmirror
 
 ## Usage
 
-TODO: Write usage instructions here
+    $ rankmirror --help
 
-## Development
+eg. `rankmirror -o opensuse --flavor tumbleweed --continent asia` will get you: the fastest Tumbleweed mirror located in Asia. Those 3 options
+are mandatory for openSUSE.
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/rankmirror. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
-
+`rankmirror -o packman -s` will get you: the fastest Packman mirror from the World. And save that to a packman.mirrorlist in your `~/.rankmirror`.
+Next time, just `rankmirror -l -o packman -s`, which is faster^2. Because most of the times, there're only a few mirrors that are fast to you.
+This technology applies to openSUSE too.
 
 ## License
 

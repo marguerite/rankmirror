@@ -8,8 +8,7 @@ module RankMirror
 
 		def fetch
 			cache = RankMirror::Cache.new("http://packman.links2linux.de/mirrors").fetch
-			buffer = open(cache) {|f| f.read}
-			doc = Nokogiri::XML.parse(buffer)
+			doc = Nokogiri::HTML(open(cache))
 			doc.xpath('//td[@class="mirrortable mirror"]').each do |td|
 				unless td.at_xpath("a").nil? # ignore rsync mirror
 					v = td.at_xpath("a/@href").value
@@ -22,4 +21,3 @@ module RankMirror
 		end
 	end
 end
-

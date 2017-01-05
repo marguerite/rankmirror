@@ -7,7 +7,7 @@ module RankMirror
 		end
 
 		def get
-			if RankMirror::Reachable.new(@uri).reachable?
+			if RankMirror::Reachable.new(@uri,500).reachable?
 				r = Curl::Easy.new(@uri)
 				r.perform
 				return r.download_speed / 1024.0

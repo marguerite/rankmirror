@@ -2,14 +2,15 @@ require 'ostruct'
 
 module RankMirror
 	class Status
-		def initialize(uri)
+		def initialize(uri,distro)
 			uri << "/" unless /^.*\/$/.match(uri)
 			@uri = uri
+			@distro = distro
 		end
 
-		def get(options)
-			if RankMirror::Reachable.new(@uri).reachable?
-				case options.os
+		def get
+			if RankMirror::Reachable.new(@uri,500).reachable?
+				case @distro
 				when "opensuse"
 					tumbleweed = "tumbleweed/repo/oss/suse/repodata/"
 					leap4220 = "distribution/leap/42.2/repo/oss/suse/repodata/"
@@ -21,7 +22,7 @@ module RankMirror
 					mirror.http = @uri
 					
 					checklist.each do |k,v|
-						if RankMirror::Reachable.new(@uri + v).reachable?
+						if RankMirror::Reachable.new(@uri + v,500).reachable?
 							mirror[k] = true
 						else
 							mirror[k] = false
@@ -39,7 +40,7 @@ module RankMirror
 					mirror.http = @uri
 
 					checklist.each do |k,v|
-						if RankMirror::Reachable.new(@uri + "openSUSE_" + v + "/Essentials/repodata/").reachable?
+						if RankMirror::Reachable.new(@uri + "openSUSE_" + v + "/Essentials/repodata/",500).reachable?
 							mirror[k] = true
 						else
 							mirror[k] = false
@@ -54,4 +55,3 @@ module RankMirror
 		end
 	end
 end
-

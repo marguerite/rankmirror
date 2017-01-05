@@ -10,10 +10,7 @@ module RankMirror
 
 		def fetch
 			cache = RankMirror::Cache.new("http://mirrors.opensuse.org").fetch
-			buffer = open(cache) {|f|
-					f.read
-				}
-			doc = Nokogiri::XML.parse(buffer)
+			doc = Nokogiri::HTML(open(cache))
 			doc.root.element_children.last.element_children[-2].element_children[-1].element_children.each do |tr|
 				unless tr.children[1].attribute("class").nil?
 					@continent = tr.children[1].inner_text.delete!(":").delete("\s").downcase!
@@ -31,7 +28,7 @@ module RankMirror
 							http = httpobj.nil? ? ftp : httpobj.attribute("href").inner_text
 
 							unless leap4210 || leap4220 || tumbleweed
-								status = RankMirror::Status.new(http).get(@options)
+								status = RankMirror::Status.new(http,@options.os).get
 								unless status.nil?
 									tumbleweed = status["tumbleweed"]
 									leap4220 = status["leap4220"]

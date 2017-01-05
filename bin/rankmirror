@@ -19,12 +19,12 @@ parser = OptionParser.new do |opts|
 	end
 
 	opts.on("-o", "--os [Distribution]", 
-		"Check mirrors for this distro. Now supported openSUSE, Packman.") do |os|
+		"Check mirrors for this distro. Now supported: 'opensuse', 'packman'.") do |os|
 		case os
-		when "openSUSE","opensuse"
+		when "opensuse"
 			options.os = "opensuse"
 			options.path = "tumbleweed/repo/oss/suse/repodata/"
-		when "Packman","packman"
+		when "packman"
 			options.os = "packman"
 			options.path = "openSUSE_Tumbleweed/Essentials/repodata/"
 		else
@@ -37,8 +37,8 @@ parser = OptionParser.new do |opts|
 	end
 
 	opts.on("--continent [Continent]", "Check mirrors on this continent. openSUSE ONLY.
-		Available Continents: Africa, Asia, Europe, North America,
-		South America, Oceania.") do |cont|
+		Available Continents: 'africa', 'asia', 'europe', 'northamerica',
+		'southamerica', 'oceania'.") do |cont|
 		unless options.os != "opensuse"
 			options.continent = cont.downcase.delete("\s")
 		else
@@ -46,8 +46,8 @@ parser = OptionParser.new do |opts|
 		end
 	end
 
-	opts.on("--flavor [Flavor]","Check mirrors for this flavor.
-		Now supported: Leap-42.2, Leap-42.1, Tumbleweed") do |flavor|
+	opts.on("--flavor [Flavor]","Check mirrors for this flavor. openSUSE ONLY.
+		Now supported: '4220', '4210', 'tumbleweed'.") do |flavor|
 		case options.os
 		when "opensuse","packman"
 			case flavor
@@ -81,7 +81,7 @@ parser = OptionParser.new do |opts|
 		end
 	end
 
-	opts.on("-s","--save","Save the result in your .rankmirror directory") do |save|
+	opts.on("-s","--save","Save the mirrorlist in your .rankmirror directory") do |save|
 		options.save = true
 	end
 

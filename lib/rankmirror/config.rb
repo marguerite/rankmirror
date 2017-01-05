@@ -94,10 +94,10 @@ module RankMirror
 		def save(array)
 			FileUtils.mkdir_p @localpath unless File.directory?(@localpath)
 			mirrors_array = array.map! do |uri|
-				status = RankMirror::Status.new(uri)
-				mirror = status.get(@options)
+				mirror = RankMirror::Status.new(uri,@options.os).get
 				mirror.name = URI.parse(uri).host if mirror.name.nil?
-				mirror.continent,mirror.country = "world","world"
+				mirror.continent = "world"
+				mirror.country = "world"
 				mirror
 			end
 			write(mirrors_array,localconfig)
