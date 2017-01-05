@@ -117,7 +117,7 @@ when "opensuse"
 when "packman"
 	local = RankMirror::LocalPackman.new(config.path,options).sort
 	mirrors = unless options.local
-			remote = RankMirror::RemotePackman.new.sort
+			remote = RankMirror::RemotePackman.new.fetch
 			remote.concat(local)
 		  else
 			local

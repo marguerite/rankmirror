@@ -1,23 +1,24 @@
-require 'open-uri'
 require 'nokogiri'
 
 module RankMirror
 	class RemotePackman
 		def initialize
-			@pm_world = Array.new
-			pm = Nokogiri::HTML(open("http://packman.links2linux.de/mirrors"))
-			pm.xpath('//td[@class="mirrortable mirror"]').each do |td|
+			@mirrors = []
+		end
+
+		def fetch
+			cache = RankMirror::Cache.new("http://packman.links2linux.de/mirrors").fetch
+			buffer = open(cache) {|f| f.read}
+			doc = Nokogiri::XML.parse(buffer)
+			doc.xpath('//td[@class="mirrortable mirror"]').each do |td|
 				unless td.at_xpath("a").nil? # ignore rsync mirror
 					v = td.at_xpath("a/@href").value
 					v << "/" unless /^.*\/$/.match(v)
 					v << "suse/"
-					@pm_world << v unless v.index("ftp://")
+					@mirrors << v unless v.index("ftp://")
 				end
 			end
-		end
-
-		def sort
-			return @pm_world
+			return @mirrors
 		end
 	end
 end
