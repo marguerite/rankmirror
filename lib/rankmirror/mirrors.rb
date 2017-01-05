@@ -2,7 +2,7 @@ module RankMirror
 	class Mirrors
 
 		def initialize(mirrors)
-			@mirrors = mirrors.map!{|mirror| mirror if RankMirror::Reachable.new(mirror).reachable?}.compact!
+			@mirrors = mirrors
 		end
 
 		def sort_by_speed(options)

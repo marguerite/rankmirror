@@ -4,8 +4,11 @@ module RankMirror
 	class Reachable
 		def initialize(uri)
 			@uri = uri
-			@ping = -> (x) {
-				r = Curl::Easy.new(x)
+		end
+
+		def reachable?
+			begin
+				r = Curl::Easy.new(@uri)
 				r.timeout_ms = 1000
 				r.perform
 				if r.response_code == 404
@@ -13,15 +16,9 @@ module RankMirror
 				else
 					true
 				end
-				}
-		end
-
-		def reachable?
-			begin 
-				@ping.call(@uri)
 			rescue
 				return false
 			end
 		end
 	end
-end         
+end

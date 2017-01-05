@@ -14,11 +14,11 @@ module RankMirror
 					f.read
 				}
 			doc = Nokogiri::XML.parse(buffer)
-			doc.root.children.children.children.select{|l| l.name == "tr"}.each do |tr|
+			doc.root.element_children.last.element_children[-2].element_children[-1].element_children.each do |tr|
 				unless tr.children[1].attribute("class").nil?
 					@continent = tr.children[1].inner_text.delete!(":").delete("\s").downcase!
 				else
-					if @options.continent == "world" || @options.continent == @continent
+					if @continent == @options.continent || @options.continent == "world"
 						country = tr.children[1].inner_text.strip!
 						unless country.nil?
 							tumbleweed = tr.children[15].children[0].nil? ? false : true

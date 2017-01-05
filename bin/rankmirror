@@ -40,22 +40,7 @@ parser = OptionParser.new do |opts|
 		Available Continents: Africa, Asia, Europe, North America,
 		South America, Oceania.") do |cont|
 		unless options.os != "opensuse"
-			case cont
-			when "Africa","africa"
-				options.continent = "africa"
-			when "Asia","asia","china","japan"
-				options.continent = "asia"
-			when "Europe","europe","euro"
-				options.continent = "euro"
-			when "North America","north america","na"
-				options.continent = "na"
-			when "South America","south america","sa"
-				options.continent = "sa"
-			when "Oceania","oceania","ocean"
-				options.continent = "ocean"
-			else
-				options.continent = "world"
-			end
+			options.continent = cont.downcase.delete("\s")
 		else
 			raise RankMirror::SuboptionNotSupported
 		end
@@ -66,11 +51,11 @@ parser = OptionParser.new do |opts|
 		case options.os
 		when "opensuse","packman"
 			case flavor
-			when "Leap-42.2","leap-42.2","leap-4220","4220"
+			when "4220"
 				options.flavor = "leap4220"
-			when "Leap-42.1","leap-42.1","leap-4210","4210"
+			when "4210"
 				options.flavor = "leap4210"
-			when "Tumbleweed","tumbleweed","tw"
+			when "tumbleweed","tw"
 				options.flavor = "tumbleweed"
 			else
 				raise RankMirror::FlavorNotImplemented
