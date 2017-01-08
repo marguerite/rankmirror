@@ -57,6 +57,14 @@ module RankMirror
 			@continent ||= @options.continent
 		end
 
+		def country=(v)
+			@options.country = v
+		end
+
+		def country
+			@country ||= @options.country
+		end
+
 		def flavor=(v)
 			@options.flavor = v
 		end

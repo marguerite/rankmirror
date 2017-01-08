@@ -4,7 +4,6 @@ $:.push(File.expand_path(File.dirname(__FILE__) + "/../lib"))
 
 require 'rankmirror'
 require 'optparse'
-require 'colorize'
 
 options = RankMirror::Options.new
 
@@ -19,7 +18,7 @@ parser = OptionParser.new do |opts|
 	end
 
 	opts.on("-o", "--os [Distribution]", 
-		"Check mirrors for this distro. Now supported: 'opensuse', 'packman'.") do |os|
+		"Check mirrors for this distro. Now supported: 'opensuse', 'packman', 'fedora', 'epel'.") do |os|
 		case os
 		when "opensuse"
 			options.os = "opensuse"
@@ -27,12 +26,14 @@ parser = OptionParser.new do |opts|
 		when "packman"
 			options.os = "packman"
 			options.path = "openSUSE_Tumbleweed/Essentials/repodata/"
+		when "fedora"
+			options.os = "fedora"
+		when "epel"
+			options.os = "epel"
+		when nil
+			raise RankMirror::MandatoryOptionNotSpecified
 		else
 			raise RankMirror::DistributionNotImplemented
-		end
-
-		if options.os.nil?
-			raise RankMirror::MandatoryOptionNotSpecified
 		end
 	end
 
@@ -41,13 +42,24 @@ parser = OptionParser.new do |opts|
 		'southamerica', 'oceania'.") do |cont|
 		unless options.os != "opensuse"
 			options.continent = cont.downcase.delete("\s")
+			raise RankMirror::MandatoryOptionNotSpecified if options.continent.nil?
 		else
-			raise RankMirror::SuboptionNotSupported
+			raise RankMirror::DistributionNotImplemented
 		end
 	end
 
-	opts.on("--flavor [Flavor]","Check mirrors for this flavor. openSUSE ONLY.
-		Now supported: '4220', '4210', 'tumbleweed'.") do |flavor|
+	opts.on("--country [Country]", "Check mirrors in this country. Fedora/EPEL ONLY.") do |country|
+		case options.os
+		when "fedora","epel"
+			options.country = country.downcase
+			raise RankMirror::MandatoryOptionNotSpecified if options.country.nil?
+		else
+			raise RankMirror::DistributionNotImplemented
+		end
+	end
+
+	opts.on("--flavor [Flavor]","Check mirrors for this flavor.
+		Now supported: openSUSE: '4220', '4210', 'tumbleweed'; Fedora: 20-25 ; epel: 4-7.") do |flavor|
 		case options.os
 		when "opensuse","packman"
 			case flavor
@@ -57,15 +69,25 @@ parser = OptionParser.new do |opts|
 				options.flavor = "leap4210"
 			when "tumbleweed","tw"
 				options.flavor = "tumbleweed"
+			when nil
+				raise RankMirror::MandatoryOptionNotSpecified
 			else
 				raise RankMirror::FlavorNotImplemented
 			end
+		when "fedora"
+			options.flavor = flavor
+			options.path = "releases/" + flavor + "/Everything/x86_64/os/repodata/"
+			raise RankMirror::MandatoryOptionNotSpecified if options.flavor.nil?
+		when "epel"
+			options.flavor = flavor
+			options.path = flavor + "/x86_64/repodata/"
+			raise RankMirror::MandatoryOptionNotSpecified if options.flavor.nil?
 		else
 			raise RankMirror::DistributionNotImplemented
 		end
 	end
 
-	opts.on("-q", "--quick [1/0]", "Check mirrors quickly/slowly.
+	opts.on("-q", "--quick [1/0]", "Check mirrors quickly/slowly. openSUSE/Packman ONLY.
 		The quick check will download a tiny file from the mirror, thus
 		response quickly but the result will be less accurate. Default: 1") do |quick|
 		unless quick.to_i > 0
@@ -122,6 +144,8 @@ when "packman"
 		  else
 			local
 		  end
+when "fedora","epel"
+	mirrors = RankMirror::RemoteFedora.new(options).fetch
 else
 	raise RankMirror::DistributionNotImplemented
 end
@@ -137,11 +161,11 @@ i = 1
 sorted.each do |k,v|
 	speed = v.round(2)
 	if i < 4
-		puts "#{i}\t#{k}\t#{speed}\sKiB/s".green
+		puts "\033[0;32m#{i}\t#{k}\t#{speed}\sKiB/s\033[0m"
 	elsif i > 3 && i < 6
-		puts "#{i}\t#{k}\t#{speed}\sKiB/s".yellow
+		puts "\033[1;33m#{i}\t#{k}\t#{speed}\sKiB/s\033[0m"
 	else
-		puts "#{i}\t#{k}\t#{speed}\sKiB/s".red
+		puts "\033[0;31m#{i}\t#{k}\t#{speed}\sKiB/s\033[0m"
 	end
 	i += 1
 end

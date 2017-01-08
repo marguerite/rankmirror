@@ -19,7 +19,6 @@ module RankMirror
 					
 					checklist = {"tumbleweed"=>tumbleweed,"leap4220"=>leap4220,"leap4210"=>leap4210,"leap4230"=>leap4230}
 					mirror = OpenStruct.new
-					mirror.http = @uri
 					
 					checklist.each do |k,v|
 						if RankMirror::Reachable.new(@uri + v,500).reachable?
@@ -37,7 +36,6 @@ module RankMirror
 					checklist = {"tumbleweed"=>tumbleweed,"leap4220"=>leap4220,"leap4210"=>leap4210,"leap4230"=>leap4230}
 
 					mirror = OpenStruct.new
-					mirror.http = @uri
 
 					checklist.each do |k,v|
 						if RankMirror::Reachable.new(@uri + "openSUSE_" + v + "/Essentials/repodata/",500).reachable?
@@ -47,6 +45,28 @@ module RankMirror
 						end
 					end
 					return mirror
+				when "fedora"
+					status = Hash.new
+					check = ["20","21","22","23","24","25"]
+					check.each do |k|
+						if RankMirror::Reachable.new(@uri + "releases/" + k + "/Everything/x86_64/os/repodata/repomd.xml",500).reachable?
+							status[k] = true
+						else
+							status[k] = false
+						end
+					end
+					return status
+				when "epel"
+					status = Hash.new
+					check = ["4","5","6","7"]
+					check.each do |k|
+						if RankMirror::Reachable.new(@uri + "/" + k + "/x86_64/repodata/repomd.xml",500).reachable?
+							status[k] = true
+						else
+							status[k] = false
+						end
+					end
+					return status
 				else
 				end
 			else

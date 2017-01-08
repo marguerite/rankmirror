@@ -1,0 +1,13 @@
+# sitename	country		http		7	6	5	4
+Aliyun	cn	http://mirrors.aliyun.com/epel/	true	true	true	true
+Capital Online	cn	http://mirrors.yun-idc.com/epel/	true	true	true	true
+Northeastern University	cn	http://mirror.neu.edu.cn/fedora-epel	true	true	true	true
+SJTU	cn	http://ftp.sjtu.edu.cn/fedora/epel/	true	true	true	true
+USTC	cn	http://mirrors.ustc.edu.cn/epel/	true	true	true	true
+Neusoft	cn	http://mirrors.neusoft.edu.cn/epel/	true	true	true	true
+Zhejiang University	cn	http://mirrors.zju.edu.cn/epel/	true	true	true	true
+Lanzhou University	cn	http://mirror.lzu.edu.cn/epel/	true	true	true	true
+Bit	cn	http://mirror.bit.edu.cn/fedora/epel/	true	true	true	true
+Hust	cn	http://mirrors.hust.edu.cn/epel/	true	true	true	true
+Chongqing University	cn	http://b.mirrors.lanunion.org/epel/	true	true	true	true
+Dalian University of Technology	cn	http://mirror.dlut.edu.cn/epel/	true	true	true	true

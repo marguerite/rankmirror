@@ -1,0 +1,9 @@
+# sitename	country		http		25	24	23	22	21	20
+Aliyun	cn	http://mirrors.aliyun.com/fedora/	true	true	true	true	true	true
+Capital Online	cn	http://mirrors.yun-idc.com/fedora/	true	true	true	true	true	true
+Northeastern University	cn	http://mirror.neu.edu.cn/fedora/linux/	false	false	true	true	true	true
+SJTU	cn	http://ftp.sjtu.edu.cn/fedora/linux/	true	true	true	true	true	true
+USTC	cn	http://mirrors.ustc.edu.cn/fedora/	true	true	true	true	true	true
+Zhejiang University	cn	http://mirrors.zju.edu.cn/fedora/	true	true	true	true	true	true
+Lanzhou University	cn	http://mirror.lzu.edu.cn/epel/	true	true	true	true	true	true
+Bit	cn	http://mirror.bit.edu.cn/fedora/linux/	true	true	true	true	true	true

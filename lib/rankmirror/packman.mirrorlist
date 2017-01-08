@@ -1,2 +1,3 @@
 # sitename	continent	country		http		tumbleweed	leap4220	leap4210	leap4230
 Aliyun	asia	china	http://mirrors.aliyun.com/packman/	true	true	true	false
+BJTU	asia	china	http://mirror.bjtu.edu.cn/packman/suse/	true	true	true	false

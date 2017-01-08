@@ -9,6 +9,7 @@ require 'rankmirror/localoss'
 require 'rankmirror/cache'
 require 'rankmirror/remotepackman'
 require 'rankmirror/localpackman'
+require 'rankmirror/remotefedora'
 require 'rankmirror/status'
 require 'rankmirror/config'
 
