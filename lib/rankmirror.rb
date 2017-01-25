@@ -10,6 +10,8 @@ require 'rankmirror/cache'
 require 'rankmirror/remotepackman'
 require 'rankmirror/localpackman'
 require 'rankmirror/remotefedora'
+require 'rankmirror/localfedora'
+require 'rankmirror/localepel'
 require 'rankmirror/status'
 require 'rankmirror/config'
 

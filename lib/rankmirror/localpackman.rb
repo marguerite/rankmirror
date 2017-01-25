@@ -1,10 +1,8 @@
-require 'ostruct'
-
 module RankMirror
 	class LocalPackman
 		def initialize(mirrorlist,options)
 			@options = options
-			@mirrorlist = RankMirror::Config.new(@options).parse(mirrorlist)	
+			@mirrorlist = RankMirror::SUSEConfig.new(@options).parse(mirrorlist)	
 		end
 
 		def sort

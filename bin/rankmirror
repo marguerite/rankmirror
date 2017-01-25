@@ -75,11 +75,11 @@ parser = OptionParser.new do |opts|
 				raise RankMirror::FlavorNotImplemented
 			end
 		when "fedora"
-			options.flavor = flavor
+			options.flavor = "fedora" + flavor
 			options.path = "releases/" + flavor + "/Everything/x86_64/os/repodata/"
 			raise RankMirror::MandatoryOptionNotSpecified if options.flavor.nil?
 		when "epel"
-			options.flavor = flavor
+			options.flavor = "epel" + flavor
 			options.path = flavor + "/x86_64/repodata/"
 			raise RankMirror::MandatoryOptionNotSpecified if options.flavor.nil?
 		else
@@ -144,8 +144,22 @@ when "packman"
 		  else
 			local
 		  end
-when "fedora","epel"
-	mirrors = RankMirror::RemoteFedora.new(options).fetch
+when "fedora"
+	local = RankMirror::LocalFedora.new(config.path,options).sort
+	mirrors = unless options.local
+		  	remote = RankMirror::RemoteFedora.new(options).fetch
+			remote.concat(local)
+		  else
+			local
+		  end
+when "epel"
+	local = RankMirror::LocalEPEL.new(config.path,options).sort
+	mirrors = unless options.local
+			remote = RankMirror::RemoteFedora.new(options).fetch
+			remote.concat(local)
+		  else
+			local
+		  end
 else
 	raise RankMirror::DistributionNotImplemented
 end

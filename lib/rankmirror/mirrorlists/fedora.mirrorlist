@@ -5,5 +5,5 @@ Northeastern University	cn	http://mirror.neu.edu.cn/fedora/linux/	false	false	tr
 SJTU	cn	http://ftp.sjtu.edu.cn/fedora/linux/	true	true	true	true	true	true
 USTC	cn	http://mirrors.ustc.edu.cn/fedora/	true	true	true	true	true	true
 Zhejiang University	cn	http://mirrors.zju.edu.cn/fedora/	true	true	true	true	true	true
-Lanzhou University	cn	http://mirror.lzu.edu.cn/epel/	true	true	true	true	true	true
+Lanzhou University	cn	http://mirror.lzu.edu.cn/fedora/	true	true	true	true	true	true
 Bit	cn	http://mirror.bit.edu.cn/fedora/linux/	true	true	true	true	true	true

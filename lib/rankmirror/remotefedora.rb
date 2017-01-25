@@ -18,11 +18,17 @@ module RankMirror
 							if @options.os == "fedora" 
 								unless a["href"].index("epel")
 									status = RankMirror::Status.new(a["href"],@options.os).get
-									@mirrors << a["href"] if status[@options.flavor] == true
+									flavor = @options.flavor.sub('fedora','')
+									@mirrors << a["href"] if status[flavor] == true
 								end
 							else
-								status = RankMirror::Status.new(a["href"],@options.os).get
-								@mirrors << a["href"] if status[@options.flavor] == true
+								if a["href"].index("epel")
+									# neu.edu.cn has a wrong epel url on fedora mirror site
+									uri = a["href"].index("neu.edu.cn") ? a["href"].sub("fedora/epel","fedora-epel") : a["href"]
+									status = RankMirror::Status.new(uri,@options.os).get
+									flavor = @options.flavor.sub('epel','')
+									@mirrors << a["href"] if status[flavor] == true
+								end
 							end
 						end
 					end
