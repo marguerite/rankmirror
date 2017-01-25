@@ -6,6 +6,13 @@ require 'rankmirror'
 require 'optparse'
 
 options = RankMirror::Options.new
+options.local = false
+options.os = "opensuse"
+options.continent = "asia"
+options.flavor = "leap4220"
+options.quick = true
+options.path = nil
+options.file = "repomd.xml"
 
 parser = OptionParser.new do |opts|
 	opts.banner = "Usage: rankmirror [options]"
@@ -22,7 +29,7 @@ parser = OptionParser.new do |opts|
 		case os
 		when "opensuse"
 			options.os = "opensuse"
-			options.path = "tumbleweed/repo/oss/suse/repodata/"
+			options.path = "tumbleweed/repo/oss/suse/repodata/" 
 		when "packman"
 			options.os = "packman"
 			options.path = "openSUSE_Tumbleweed/Essentials/repodata/"
@@ -62,6 +69,7 @@ parser = OptionParser.new do |opts|
 		Now supported: openSUSE: '4220', '4210', 'tumbleweed'; Fedora: 20-25 ; epel: 4-7.") do |flavor|
 		case options.os
 		when "opensuse","packman"
+			options.keys = ["name","continent","country","http","tumbleweed","leap4220","leap4210","leap4230"]
 			case flavor
 			when "4220"
 				options.flavor = "leap4220"
@@ -77,10 +85,12 @@ parser = OptionParser.new do |opts|
 		when "fedora"
 			options.flavor = "fedora" + flavor
 			options.path = "releases/" + flavor + "/Everything/x86_64/os/repodata/"
+			options.keys = ["name","country","http","fedora25","fedora24","fedora23","fedora22","fedora21","fedora20"]
 			raise RankMirror::MandatoryOptionNotSpecified if options.flavor.nil?
 		when "epel"
 			options.flavor = "epel" + flavor
 			options.path = flavor + "/x86_64/repodata/"
+			options.keys = ["name","country","http","epel7","epel6","epel5","epel4"]
 			raise RankMirror::MandatoryOptionNotSpecified if options.flavor.nil?
 		else
 			raise RankMirror::DistributionNotImplemented
@@ -167,7 +177,7 @@ end
 sorted = RankMirror::Mirrors.new(mirrors).sort_by_speed(options).select {|k,v| v > 0}
 
 if options.save
-	config.save(sorted.keys)
+	config.save(sorted.keys,options.keys)
 end
 
 i = 1

@@ -46,27 +46,27 @@ module RankMirror
 					end
 					return mirror
 				when "fedora"
-					status = Hash.new
+					mirror = OpenStruct.new
 					check = ["20","21","22","23","24","25"]
 					check.each do |k|
 						if RankMirror::Reachable.new(@uri + "releases/" + k + "/Everything/x86_64/os/repodata/repomd.xml",500).reachable?
-							status[k] = true
+							mirror["fedora" + k] = true
 						else
-							status[k] = false
+							mirror["fedora" + k] = false
 						end
 					end
-					return status
+					return mirror
 				when "epel"
-					status = Hash.new
+					mirror = OpenStruct.new
 					check = ["4","5","6","7"]
 					check.each do |k|
 						if RankMirror::Reachable.new(@uri + "/" + k + "/x86_64/repodata/repomd.xml",500).reachable?
-							status[k] = true
+							mirror["epel" + k] = true
 						else
-							status[k] = false
+							mirror["epel" + k] = false
 						end
 					end
-					return status
+					return mirror
 				else
 				end
 			else
