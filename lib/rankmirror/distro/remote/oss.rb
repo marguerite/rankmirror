@@ -41,6 +41,7 @@ module RankMirror
 					end
 				end
 			end
+
 			return @mirrors
 		end
 	end
