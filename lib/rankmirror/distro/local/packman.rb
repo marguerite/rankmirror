@@ -2,7 +2,8 @@ module RankMirror
 	class LocalPackman
 		def initialize(mirrorlist,options)
 			@options = options
-			@mirrorlist = RankMirror::SUSEConfig.new(@options).parse(mirrorlist)	
+			args = ["name","continent","country","http","tumbleweed","leap4220","leap4210","leap4230"]
+			@mirrorlist = RankMirror::SUSEConfig.new(@options).parse(mirrorlist,args)
 		end
 
 		def sort

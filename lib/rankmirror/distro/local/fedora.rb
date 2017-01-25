@@ -2,7 +2,8 @@ module RankMirror
 	class LocalFedora
 		def initialize(mirrorlist,options)
 			@options = options
-			@mirrorlist = RankMirror::FedoraConfig.new(@options).parse(mirrorlist)
+			args = ["name","country","http","fedora25","fedora24","fedora23","fedora22","fedora21","fedora20"]
+			@mirrorlist = RankMirror::Config.new(@options).parse(mirrorlist,args)
 		end
 
 		def sort

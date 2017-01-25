@@ -8,8 +8,8 @@ module RankMirror
 		def initialize(options)
 			@options = options
 			@name = @options.os
-			@file = "./mirrorlists/" + @name + ".mirrorlist"
-			@systempath = File.expand_path(File.dirname(__FILE__))
+			@file = @name + ".mirrorlist"
+			@systempath = File.expand_path(File.join(File.dirname(__FILE__),"mirrorlists"))
 			@localpath = ENV['HOME'] + "/.rankmirror/"
 		end
 
@@ -47,7 +47,7 @@ module RankMirror
 				local_mirrors.each do |local_mirror|
 					if system_mirror.http == local_mirror.http
 						http_match = true
-						local_mirror.continent = system_mirror.continent
+						local_mirror.continent = system_mirror.continent if @name == "opensuse" || @name == "packman"
 						local_mirror.country = system_mirror.country
 					end
 				end
@@ -73,7 +73,7 @@ module RankMirror
 		def save(array)
 			FileUtils.mkdir_p @localpath unless File.directory?(@localpath)
 			mirrors_array = array.map! do |uri|
-				mirror = RankMirror::Status.new(uri,@options.os).get
+				mirror = RankMirror::Status.new(uri,@name).get
 				mirror.name = URI.parse(uri).host if mirror.name.nil?
 				mirror.continent = "world"
 				mirror.country = "world"
@@ -81,75 +81,22 @@ module RankMirror
 			end
 			write(mirrors_array,localconfig)
 		end
-	end
 
-	class SUSEConfig < Config
-		def parse(config)
+		def parse(config,args)
 			f = open(config)
 			mirrors = f.readlines.map!{|l|
 				unless l.start_with?("#")
 					elements = l.strip.split("\t")
-					mirror = Struct.new(:name, :continent, :country, :http, :tumbleweed, :leap4220, :leap4210, :leap4230).new
-					mirror.name = elements[0]
-					mirror.continent = elements[1]
-					mirror.country = elements[2]
-					mirror.http = elements[3]
-					mirror.tumbleweed = elements[4]
-					mirror.leap4220 = elements[5]
-					mirror.leap4210 = elements[6]
-					mirror.leap4230 = elements[7]
+					mirror = OpenStruct.new
+					args.each_with_index {|arg,index| mirror[arg] = elements[index] }
+					p mirror
 					mirror
 				end
-			}.compact!
+			}.compact
 			f.close
 			return mirrors
 		end
 	end
 
-	class FedoraConfig < Config
-		def parse(config)
-			f = open(config)
-			mirrors = f.readlines.map!{|l|
-				unless l.start_with?("#")
-					elements = l.strip.split("\t")
-					mirror = Struct.new(:name, :country, :http, :fedora25, :fedora24, :fedora23, :fedora22, :fedora21,:fedora20).new
-					mirror.name = elements[0]
-					mirror.country = elements[1]
-					mirror.http = elements[2]
-					mirror.fedora25 = elements[3]
-					mirror.fedora24 = elements[4]
-					mirror.fedora23 = elements[5]
-					mirror.fedora22 = elements[6]
-					mirror.fedora21 = elements[7]
-					mirror.fedora20 = elements[8]
-					mirror
-				end
-			}.compact!
-			f.close
-			return mirrors
-		end
-	end
-
-	class EPELConfig < Config
-		def parse(config)
-			f = open(config)
-			mirrors = f.readlines.map!{|l|
-				unless l.start_with?("#")
-					elements = l.strip.split("\t")
-					mirror = Struct.new(:name, :country, :http, :epel7, :epel6, :epel5, :epel4).new
-					mirror.name = elements[0]
-					mirror.country = elements[1]
-					mirror.http = elements[2]
-					mirror.epel7 = elements[3]
-					mirror.epel6 = elements[4]
-					mirror.epel5 = elements[5]
-					mirror.epel4 = elements[6]
-					mirror
-				end
-			}.compact!
-			f.close
-			return mirrors
-		end
-	end
 end
 
