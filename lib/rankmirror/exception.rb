@@ -1,10 +1,6 @@
 module RankMirror
-	class DistributionNotImplemented < StandardError
-	end
-	class MandatoryOptionNotSpecified < StandardError
-	end
-	class FlavorNotImplemented < StandardError
-	end
-	class ConfigurationNotFound < StandardError
-	end
+	DistributionNotImplemented = Class.new(StandardError)
+	MandatoryOptionNotSpecified = Class.new(StandardError)
+	FlavorNotImplemented = Class.new(StandardError)
+	ConfigurationNotFound = Class.new(StandardError)
 end
