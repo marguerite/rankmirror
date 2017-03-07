@@ -1,4 +1,4 @@
 require 'ostruct'
 module RankMirror
-	Options = Class.new(OpenStruct)
+  Options = Class.new(OpenStruct)
 end

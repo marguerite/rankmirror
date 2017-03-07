@@ -1,195 +1,189 @@
 #!/usr/bin/env ruby
 
-$:.push(File.expand_path(File.dirname(__FILE__) + "/../lib"))
+$LOAD_PATH.push(File.expand_path(File.dirname(__FILE__) + '/../lib'))
 
 require 'rankmirror'
 require 'optparse'
 
 options = RankMirror::Options.new
 options.local = false
-options.os = "opensuse"
-options.continent = "asia"
-options.flavor = "leap4220"
+options.os = 'opensuse'
+options.continent = 'asia'
+options.flavor = 'leap4220'
 options.quick = true
 options.path = nil
-options.file = "repomd.xml"
+options.file = 'repomd.xml'
 
 parser = OptionParser.new do |opts|
-	opts.banner = "Usage: rankmirror [options]"
-	opts.separator ""
-	opts.separator "Specific options:"
+  opts.banner = 'Usage: rankmirror [options]'
+  opts.separator ''
+  opts.separator 'Specific options:'
 
-	opts.on("-l", "--localonly",
-		"Check mirrors in your local mirrorlist file ONLY.") do |local|
-		options.local = true	
-	end
+  opts.on('-l', '--localonly',
+          'Check mirrors in your local mirrorlist file ONLY.') do |_local|
+    options.local = true
+  end
 
-	opts.on("-o", "--os [Distribution]", 
-		"Check mirrors for this distro. Now supported: 'opensuse', 'packman', 'fedora', 'epel'.") do |os|
-		case os
-		when "opensuse"
-			options.os = "opensuse"
-			options.path = "tumbleweed/repo/oss/suse/repodata/" 
-		when "packman"
-			options.os = "packman"
-			options.path = "openSUSE_Tumbleweed/Essentials/repodata/"
-		when "fedora"
-			options.os = "fedora"
-		when "epel"
-			options.os = "epel"
-		when nil
-			raise RankMirror::MandatoryOptionNotSpecified
-		else
-			raise RankMirror::DistributionNotImplemented
-		end
-	end
+  opts.on('-o', '--os [Distribution]',
+          "Check mirrors for this distro. Now supported: 'opensuse', 'packman', 'fedora', 'epel'.") do |os|
+    case os
+    when 'opensuse'
+      options.os = 'opensuse'
+      options.path = 'tumbleweed/repo/oss/suse/repodata/'
+    when 'packman'
+      options.os = 'packman'
+      options.path = 'openSUSE_Tumbleweed/Essentials/repodata/'
+    when 'fedora'
+      options.os = 'fedora'
+    when 'epel'
+      options.os = 'epel'
+    when nil
+      raise RankMirror::MandatoryOptionNotSpecified
+    else
+      raise RankMirror::DistributionNotImplemented
+    end
+  end
 
-	opts.on("--continent [Continent]", "Check mirrors on this continent. openSUSE ONLY.
+  opts.on('--continent [Continent]', "Check mirrors on this continent. openSUSE ONLY.
 		Available Continents: 'africa', 'asia', 'europe', 'northamerica',
 		'southamerica', 'oceania'.") do |cont|
-		unless options.os != "opensuse"
-			options.continent = cont.downcase.delete("\s")
-			raise RankMirror::MandatoryOptionNotSpecified if options.continent.nil?
-		else
-			raise RankMirror::DistributionNotImplemented
-		end
-	end
+    raise RankMirror::DistributionNotImplemented unless options.os == 'opensuse'
+    options.continent = cont.downcase.delete("\s")
+    raise RankMirror::MandatoryOptionNotSpecified if options.continent.nil?
+  end
 
-	opts.on("--country [Country]", "Check mirrors in this country. Fedora/EPEL ONLY.") do |country|
-		case options.os
-		when "fedora","epel"
-			options.country = country.downcase
-			raise RankMirror::MandatoryOptionNotSpecified if options.country.nil?
-		else
-			raise RankMirror::DistributionNotImplemented
-		end
-	end
+  opts.on('--country [Country]', 'Check mirrors in this country. Fedora/EPEL ONLY.') do |country|
+    case options.os
+    when 'fedora', 'epel'
+      options.country = country.downcase
+      raise RankMirror::MandatoryOptionNotSpecified if options.country.nil?
+    else
+      raise RankMirror::DistributionNotImplemented
+    end
+  end
 
-	opts.on("--flavor [Flavor]","Check mirrors for this flavor.
+  opts.on('--flavor [Flavor]', "Check mirrors for this flavor.
 		Now supported: openSUSE: '4220', '4210', 'tumbleweed'; Fedora: 20-25 ; epel: 4-7.") do |flavor|
-		case options.os
-		when "opensuse","packman"
-			options.keys = ["name","continent","country","http","tumbleweed","leap4220","leap4210","leap4230"]
-			case flavor
-			when "4220"
-				options.flavor = "leap4220"
-			when "4210"
-				options.flavor = "leap4210"
-			when "tumbleweed","tw"
-				options.flavor = "tumbleweed"
-			when nil
-				raise RankMirror::MandatoryOptionNotSpecified
-			else
-				raise RankMirror::FlavorNotImplemented
-			end
-		when "fedora"
-			options.flavor = "fedora" + flavor
-			options.path = "releases/" + flavor + "/Everything/x86_64/os/repodata/"
-			options.keys = ["name","country","http","fedora25","fedora24","fedora23","fedora22","fedora21","fedora20"]
-			raise RankMirror::MandatoryOptionNotSpecified if options.flavor.nil?
-		when "epel"
-			options.flavor = "epel" + flavor
-			options.path = flavor + "/x86_64/repodata/"
-			options.keys = ["name","country","http","epel7","epel6","epel5","epel4"]
-			raise RankMirror::MandatoryOptionNotSpecified if options.flavor.nil?
-		else
-			raise RankMirror::DistributionNotImplemented
-		end
-	end
+    case options.os
+    when 'opensuse', 'packman'
+      options.keys = %w(name continent country http tumbleweed leap4220 leap4210 leap4230)
+      case flavor
+      when '4220'
+        options.flavor = 'leap4220'
+      when '4210'
+        options.flavor = 'leap4210'
+      when 'tumbleweed', 'tw'
+        options.flavor = 'tumbleweed'
+      when nil
+        raise RankMirror::MandatoryOptionNotSpecified
+      else
+        raise RankMirror::FlavorNotImplemented
+      end
+    when 'fedora'
+      options.flavor = 'fedora' + flavor
+      options.path = 'releases/' + flavor + '/Everything/x86_64/os/repodata/'
+      options.keys = %w(name country http fedora25 fedora24 fedora23 fedora22 fedora21 fedora20)
+      raise RankMirror::MandatoryOptionNotSpecified if options.flavor.nil?
+    when 'epel'
+      options.flavor = 'epel' + flavor
+      options.path = flavor + '/x86_64/repodata/'
+      options.keys = %w(name country http epel7 epel6 epel5 epel4)
+      raise RankMirror::MandatoryOptionNotSpecified if options.flavor.nil?
+    else
+      raise RankMirror::DistributionNotImplemented
+    end
+  end
 
-	opts.on("-q", "--quick [1/0]", "Check mirrors quickly/slowly. openSUSE/Packman ONLY.
+  opts.on('-q', '--quick [1/0]', "Check mirrors quickly/slowly. openSUSE/Packman ONLY.
 		The quick check will download a tiny file from the mirror, thus
 		response quickly but the result will be less accurate. Default: 1") do |quick|
-		unless quick.to_i > 0
-			options.quick = false
-			case options.os
-			when "opensuse"
-				options.file = "appdata.xml.gz"
-			when "packman"
-				options.file = "primary.xml.gz"
-			else
-				raise RankMirror::DistributionNotImplemented
-			end
-		end
-	end
+    unless quick.to_i > 0
+      options.quick = false
+      case options.os
+      when 'opensuse'
+        options.file = 'appdata.xml.gz'
+      when 'packman'
+        options.file = 'primary.xml.gz'
+      else
+        raise RankMirror::DistributionNotImplemented
+      end
+    end
+  end
 
-	opts.on("-s","--save","Save the mirrorlist in your .rankmirror directory") do |save|
-		options.save = true
-	end
+  opts.on('-s', '--save', 'Save the mirrorlist in your .rankmirror directory') do |_save|
+    options.save = true
+  end
 
-	opts.separator ""
-	opts.separator "Common Options:"
+  opts.separator ''
+  opts.separator 'Common Options:'
 
-	opts.on_tail("-h", "--help", "Show this message") do
-		puts opts
-		exit
-	end
+  opts.on_tail('-h', '--help', 'Show this message') do
+    puts opts
+    exit
+  end
 
-	opts.on_tail("--version","Show version") do
-		puts RankMirror::VERSION
-		exit
-	end
-
+  opts.on_tail('--version', 'Show version') do
+    puts RankMirror::VERSION
+    exit
+  end
 end
 
 parser.parse!(ARGV)
 
-mirrors = Array.new
+mirrors = []
 config = RankMirror::Config.new(options)
 
 case options.os
-when "opensuse"
-	local = RankMirror::LocalOSS.new(config.path,options).sort
-	mirrors = unless options.local
-			remote = RankMirror::RemoteOSS.new(options).fetch
-			remote.concat(local)
-		  else
-			local
-		  end
-when "packman"
-	local = RankMirror::LocalPackman.new(config.path,options).sort
-	mirrors = unless options.local
-			remote = RankMirror::RemotePackman.new.fetch
-			remote.concat(local)
-		  else
-			local
-		  end
-when "fedora"
-	local = RankMirror::LocalFedora.new(config.path,options).sort
-	mirrors = unless options.local
-		  	remote = RankMirror::RemoteFedora.new(options).fetch
-			remote.concat(local)
-		  else
-			local
-		  end
-when "epel"
-	local = RankMirror::LocalEPEL.new(config.path,options).sort
-	mirrors = unless options.local
-			remote = RankMirror::RemoteFedora.new(options).fetch
-			remote.concat(local)
-		  else
-			local
-		  end
+when 'opensuse'
+  local = RankMirror::LocalOSS.new(config.path, options).sort
+  mirrors = if options.local
+              local
+            else
+              remote = RankMirror::RemoteOSS.new(options).fetch
+              remote.concat(local)
+            end
+when 'packman'
+  local = RankMirror::LocalPackman.new(config.path, options).sort
+  mirrors = if options.local
+              local
+            else
+              remote = RankMirror::RemotePackman.new.fetch
+              remote.concat(local)
+            end
+when 'fedora'
+  local = RankMirror::LocalFedora.new(config.path, options).sort
+  mirrors = if options.local
+              local
+            else
+              remote = RankMirror::RemoteFedora.new(options).fetch
+              remote.concat(local)
+            end
+when 'epel'
+  local = RankMirror::LocalEPEL.new(config.path, options).sort
+  mirrors = if options.local
+              local
+            else
+              remote = RankMirror::RemoteFedora.new(options).fetch
+              remote.concat(local)
+            end
 else
-	raise RankMirror::DistributionNotImplemented
+  raise RankMirror::DistributionNotImplemented
 end
 
-sorted = RankMirror::Mirrors.new(mirrors).sort_by_speed(options).select {|k,v| v > 0}
+sorted = RankMirror::Mirrors.new(mirrors).sort_by_speed(options).select { |_k, v| v > 0 }
 
-if options.save
-	config.save(sorted.keys,options.keys)
-end
+config.save(sorted.keys, options.keys) if options.save
 
 i = 1
 
-sorted.each do |k,v|
-	speed = v.round(2)
-	if i < 4
-		puts "\033[0;32m#{i}\t#{k}\t#{speed}\sKiB/s\033[0m"
-	elsif i > 3 && i < 6
-		puts "\033[1;33m#{i}\t#{k}\t#{speed}\sKiB/s\033[0m"
-	else
-		puts "\033[0;31m#{i}\t#{k}\t#{speed}\sKiB/s\033[0m"
-	end
-	i += 1
+sorted.each do |k, v|
+  speed = v.round(2)
+  if i < 4
+    puts "\033[0;32m#{i}\t#{k}\t#{speed}\sKiB/s\033[0m"
+  elsif i > 3 && i < 6
+    puts "\033[1;33m#{i}\t#{k}\t#{speed}\sKiB/s\033[0m"
+  else
+    puts "\033[0;31m#{i}\t#{k}\t#{speed}\sKiB/s\033[0m"
+  end
+  i += 1
 end
